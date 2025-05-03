@@ -1,2 +1,1 @@
-![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=my-spring-boot-app&metric=alert_status)
-![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=my-spring-boot-app&metric=ncloc)
+[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=kowalczykkasia_ebiznes-zad7&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=kowalczykkasia_ebiznes-zad7)

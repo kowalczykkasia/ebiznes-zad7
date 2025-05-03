@@ -1,34 +1,47 @@
-name: SonarCloud Analysis
+name: SonarCloud
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
-  sonarcloud:
-    name: SonarCloud Analysis
+  build:
+    name: Build and analyze on SonarCloud
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          java-version: '11'
-          distribution: 'adoptopenjdk'
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Cache SonarCloud dependencies
-        uses: actions/cache@v2
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-sonar-
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v1
+      - name: Cache Maven packages
+        uses: actions/cache@v3
         with:
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build and analyze with SonarCloud
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=kowalczykkasia_ebiznes-zad7 \
+            -Dsonar.organization=kowalczykkasia \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=$SONAR_TOKEN
